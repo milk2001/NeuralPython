@@ -9,9 +9,10 @@ from PIL import Image
 from keras import models
 from keras.optimizers import SGD
 
+
 class_names = ['gatto', 'cane']
 #Load the saved model
-model = models.load_model('doggo2cat_model.h5')
+model = models.load_model('vgg16.h5')
 opt = SGD(lr=0.001, momentum=0.9)
 model.compile(loss='binary_crossentropy',
               optimizer=opt,
@@ -22,6 +23,11 @@ test = None #frame che sarà utilizzato per il motion detection
 video = VideoStream(src=0).start() #flusso webcam
 time.sleep(2.0)
 
+cane = 0
+gatto = 0
+a = 1
+color1 = 0
+color2 = 0
 while True:
 	frame = video.read()
 	if frame is None:
@@ -33,7 +39,7 @@ while True:
 	if test is None:
 		test = gray
 		continue
-    #generazione di due frame per la detenzione del movimento
+    #generazione di due frame per il rilevamento del movimento
 	frameDelta = cv2.absdiff(test, gray)
 	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
@@ -41,25 +47,39 @@ while True:
 	cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 	cnts = imutils.grab_contours(cnts)
 
+	a = a+1
 	for c in cnts:
     	# se l'area è minore vuol dire che non c'è movimento
-		if cv2.contourArea(c) < 500:
+		if cv2.contourArea(c) < 800:
 				continue
-
+		
     	# altrimenti disegno il rettangolo dove ho notato cambiamenti
 		(x, y, w, h) = cv2.boundingRect(c)
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         #trasformo il frame in RGB
 		im = Image.fromarray(frame, 'RGB')
         #Ridimensionamento della foto per darla in pasto al modello
-		im = im.resize((200,200))
+		im = im.resize((224,224))
 		img_array = np.array(im)
 		img_array = np.expand_dims(img_array, axis=0)
+		img_array = img_array - [123.68, 116.779, 103.939]
         #faccio predizione tramite modello
-		prediction = int(model.predict(img_array))
-        #scrivo sul frame la predizione
-		cv2.putText(frame,class_names[prediction], (500,50),cv2.FONT_HERSHEY_SIMPLEX,1, (0,0,255),2)
+		if a%30==0:
+			prediction = model.predict(img_array)
+			#scrivo sul frame la predizione
+			cane = round(prediction[0][0]*100,2)
+			gatto = round(abs(cane-100), 2)
+			
+			if cane>50:
+				color1 = 255
+				color2 = 0
+			else:
+				color1 = 0
+				color2 = 255
+			#print(cane)
 
+		cv2.putText(frame,"cane:  "+str(cane)+"%", (480,30),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color1,color2),2)
+		cv2.putText(frame,"gatto: "+str(gatto)+"%",(480,50),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color2,color1),2)
 	cv2.imshow("doggo", frame)
 	cv2.imshow("traccia", thresh)
 	cv2.imshow("delta", frameDelta)
