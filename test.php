@@ -3,6 +3,9 @@
 
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
         <title>cat or dog?</title>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">  <!--importazione css Bootstrap-->
         <!-- regole di stile-->
@@ -57,35 +60,37 @@
           echo "<p> Il file deve essre al massimo di 10 MB.</p>";
       }
 
-
-      $curlFile = curl_file_create($tmpfile);
-      $post = array('image'=> $curlFile );
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL,"http://localhost:5000");
-      curl_setopt($ch, CURLOPT_POST,1);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      $result=curl_exec($ch);
-      curl_close ($ch);
-      $json = json_decode($result);
       if ($errors==false) {
           move_uploaded_file($_FILES["foto"]["tmp_name"], "./upload." . $file_ext);
-      //  echo "Success";
+
+          $curlFile = curl_file_create($tmpfile);
+          $post = array('image'=> $curlFile );
+          $ch = curl_init();
+          curl_setopt($ch, CURLOPT_URL,"http://localhost:5000");
+          curl_setopt($ch, CURLOPT_POST,1);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+          $result=curl_exec($ch);
+          curl_close ($ch);
+          $json = json_decode($result);
+
+          echo("Animale: ");
+          echo($json->{"animal"});
+          echo("<br>Gatto al ");
+          echo($json->{"cat"});
+          echo("%");
+          echo("<br>Cane al ");
+          echo($json->{"dog"});
+          echo("%");
+          echo("<br><img src=\"");
+          echo("/upload.".$file_ext);
+          echo("\">");
+
       } else {
           $errors=true;
           echo "<p> Errore caricamento file.</p>";
       }
-      echo("Animale: ");
-      echo($json->{"animal"});
-      echo("<br>Gatto al ");
-      echo($json->{"cat"});
-      echo("%");
-      echo("<br>Cane al ");
-      echo($json->{"dog"});
-      echo("%");
-      echo("<img src=\"");
-      echo("/upload.".$file_ext);
-      echo("\">");
+
 }?>
 </div>
 </div>
