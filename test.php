@@ -60,37 +60,37 @@
           echo "<p> Il file deve essre al massimo di 10 MB.</p>";
       }
 
+
+      $curlFile = curl_file_create($tmpfile);
+      $post = array('image'=> $curlFile );
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL,"http://localhost:5000");
+      curl_setopt($ch, CURLOPT_POST,1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      $result=curl_exec($ch);
+      curl_close ($ch);
+      $json = json_decode($result);
       if ($errors==false) {
           move_uploaded_file($_FILES["foto"]["tmp_name"], "./upload." . $file_ext);
-
-          $curlFile = curl_file_create($tmpfile);
-          $post = array('image'=> $curlFile );
-          $ch = curl_init();
-          curl_setopt($ch, CURLOPT_URL,"http://localhost:5000");
-          curl_setopt($ch, CURLOPT_POST,1);
-          curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-          $result=curl_exec($ch);
-          curl_close ($ch);
-          $json = json_decode($result);
-
-          echo("Animale: ");
-          echo($json->{"animal"});
-          echo("<br>Gatto al ");
-          echo($json->{"cat"});
-          echo("%");
-          echo("<br>Cane al ");
-          echo($json->{"dog"});
-          echo("%");
-          echo("<br><img src=\"");
-          echo("/upload.".$file_ext);
-          echo("\">");
-
+      //  echo "Success";
       } else {
           $errors=true;
           echo "<p> Errore caricamento file.</p>";
       }
-
+      $nomeFileSuServer= "upload.".$file_ext;
+      echo("<p>Animale: ");
+      echo($json->{"animal"});
+      echo("<br>Gatto al ");
+      echo($json->{"cat"});
+      echo("%");
+      echo("<br>Cane al ");
+      echo($json->{"dog"});
+      echo("%</p>");
+      echo("<img src=\"");
+      echo("/".$nomeFileSuServer);
+      echo ('?m=' . filemtime($nomeFileSuServer));
+      echo("\">");
 }?>
 </div>
 </div>
