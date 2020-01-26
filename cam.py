@@ -9,9 +9,7 @@ from PIL import Image
 from keras import models
 from keras.optimizers import SGD
 
-
-class_names = ['gatto', 'cane']
-#Load the saved model
+#carico modello
 model = models.load_model('vgg16.h5')
 opt = SGD(lr=0.001, momentum=0.9)
 model.compile(loss='binary_crossentropy',
@@ -22,12 +20,12 @@ model.compile(loss='binary_crossentropy',
 test = None #frame che sarà utilizzato per il motion detection
 video = VideoStream(src=0).start() #flusso webcam
 time.sleep(2.0)
-
 cane = 0
 gatto = 0
 a = 1
 color1 = 0
 color2 = 0
+
 while True:
 	frame = video.read()
 	if frame is None:
@@ -52,7 +50,7 @@ while True:
     	# se l'area è minore vuol dire che non c'è movimento
 		if cv2.contourArea(c) < 800:
 				continue
-		
+
     	# altrimenti disegno il rettangolo dove ho notato cambiamenti
 		(x, y, w, h) = cv2.boundingRect(c)
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -64,19 +62,18 @@ while True:
 		img_array = np.expand_dims(img_array, axis=0)
 		img_array = img_array - [123.68, 116.779, 103.939]
         #faccio predizione tramite modello
-		if a%30==0:
+		if a%30==0: #1 volta al sec
 			prediction = model.predict(img_array)
 			#scrivo sul frame la predizione
 			cane = round(prediction[0][0]*100,2)
 			gatto = round(abs(cane-100), 2)
-			
+
 			if cane>50:
 				color1 = 255
 				color2 = 0
 			else:
 				color1 = 0
 				color2 = 255
-			#print(cane)
 
 		cv2.putText(frame,"cane:  "+str(cane)+"%", (480,30),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color1,color2),2)
 		cv2.putText(frame,"gatto: "+str(gatto)+"%",(480,50),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color2,color1),2)
