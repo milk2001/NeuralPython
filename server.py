@@ -27,7 +27,7 @@ def prepare_image(image, target):
 	image = image.resize(target)
 	image = img_to_array(image)
 	image = np.expand_dims(image, axis=0)
-	image = image - [123.68, 116.779, 103.939]
+	#image = image - [123.68, 116.779, 103.939]
 	return image
 
 @app.route("/", methods=["POST"])
