@@ -60,7 +60,7 @@ while True:
 		im = im.resize((224,224))
 		img_array = np.array(im)
 		img_array = np.expand_dims(img_array, axis=0)
-		img_array = img_array - [123.68, 116.779, 103.939]
+		#img_array = img_array - [123.68, 116.779, 103.939]
         #faccio predizione tramite modello
 		if a%30==0: #1 volta al sec
 			prediction = model.predict(img_array)
