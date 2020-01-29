@@ -57,7 +57,7 @@ def addestra():
 	history = model.fit_generator(train_it, steps_per_epoch=len(train_it),
 		validation_data=test_it, validation_steps=len(test_it), epochs=10, verbose=1)
 	stampa(history)
-	model.save("doggo2cat_model.h5")
+	model.save("vgg16.h5")
 	#model.save_weights('my_model_weights.h5')
 
 	#calcolo una valutazione sulla precisione del modello appena addestrato
