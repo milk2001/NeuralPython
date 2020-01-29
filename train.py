@@ -47,7 +47,7 @@ def addestra():
 	# preparo sia per test che train i batch degli input.
 	datagen = ImageDataGenerator(featurewise_center=True)
 	# imposto i valori medi RGB del dataset
-	datagen.mean = [123.68, 116.779, 103.939]
+	#datagen.mean = [123.68, 116.779, 103.939]
 	# definisco su quali dati il modello apprenderà e su quali effettuerà i test
 	train_it = train_datagen.flow_from_directory('dataset_dogs_vs_cats/train/',
 		class_mode='binary', batch_size=64, target_size=(224, 224))
