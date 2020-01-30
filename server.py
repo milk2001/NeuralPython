@@ -27,7 +27,7 @@ def prepare_image(image, target):
 	image = image.resize(target)
 	image = img_to_array(image)
 	image = np.expand_dims(image, axis=0)
-	#image = image - [123.68, 116.779, 103.939]
+	image = image - [123.68, 116.779, 103.939]
 	return image
 
 @app.route("/", methods=["POST"])
@@ -52,9 +52,8 @@ def predict():
 			else:
 				data['animal'] = "cat"
 			#ritorno il "json"
-			print(data)
 	return json.dumps(data)
 
 if __name__ == "__main__":
 	load_model()
-	app.run()
+	app.run(host='0.0.0.0')

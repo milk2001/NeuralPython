@@ -39,6 +39,7 @@ while True:
 		continue
     #generazione di due frame per il rilevamento del movimento
 	frameDelta = cv2.absdiff(test, gray)
+    #frame di soglia
 	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
 	thresh = cv2.dilate(thresh, None, iterations=2)
@@ -60,7 +61,7 @@ while True:
 		im = im.resize((224,224))
 		img_array = np.array(im)
 		img_array = np.expand_dims(img_array, axis=0)
-		#img_array = img_array - [123.68, 116.779, 103.939]
+		img_array = img_array - [123.68, 116.779, 103.939]
         #faccio predizione tramite modello
 		if a%30==0: #1 volta al sec
 			prediction = model.predict(img_array)
@@ -77,9 +78,9 @@ while True:
 
 		cv2.putText(frame,"cane:  "+str(cane)+"%", (480,30),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color1,color2),2)
 		cv2.putText(frame,"gatto: "+str(gatto)+"%",(480,50),cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,color2,color1),2)
-	cv2.imshow("doggo", frame)
-	cv2.imshow("traccia", thresh)
-	cv2.imshow("delta", frameDelta)
+	cv2.imshow("output", frame)
+	cv2.imshow("soglia", thresh)
+	cv2.imshow("deltaOutput", frameDelta)
 	key=cv2.waitKey(1)
 	if key == ord('q'): #per uscire
 		break
