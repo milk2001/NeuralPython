@@ -30,7 +30,7 @@ def prepare_image(image, target):
 	#image = image - [123.68, 116.779, 103.939]
 	return image
 
-@app.route("/", methods=["POST"])
+@app.route("/neural", methods=["POST"])
 def predict():
 	data = {}
 	# controllo l'upload della foto
